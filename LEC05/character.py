@@ -40,7 +40,7 @@ def interpolate_draw(x1, y1, x_target, y_target):
     
 def RectMove(x, y, side):#정사각형으로 가정
     
-    delta = side / 10
+    delta = side / 100
     fixedX = x
     fixedY = y
     while x < fixedX + side:
@@ -63,7 +63,7 @@ def RectMove(x, y, side):#정사각형으로 가정
 def CircleMove(x, y, r):
     
     degree = 0
-    delta = 5
+    delta = 10
     while degree < 360:
         degree += delta
         radian = math.radians(degree)
@@ -72,7 +72,7 @@ def CircleMove(x, y, r):
         drawCall(x, y, delta/(delta + 2))
     return x, y
 def TriangleMove(x, y, side):#정삼각형임을 가정
-    delta = side / 5
+    delta = side / 30
     startX = x
     while x < startX + side:
         x += delta
