@@ -37,7 +37,23 @@ def RectMove():
         update_canvas()
     
         delay(0.01)
-
+def CircleMove():
+    x = 400
+    y = 300
+    r = 100
+    degree = 0
+    delta = 10
+    while degree < 360:
+        degree += delta
+        radian = math.radians(degree)
+        x = 400 + r * math.cos(radian)
+        y = 300 + r * math.sin(radian)
+        clear_canvas()
+        grass.draw(400, 30)
+        character.draw(x, y)
+        update_canvas()
+    
+        delay(0.01)
 
 
 open_canvas(800, 600)
@@ -52,8 +68,9 @@ loop = 3
 while loop > 0:
    
     RectMove()
+    CircleMove()
     loop -= 1
-    #코딩 고수는 함수를 만들고 나중에 호출한다 : pseudo code
+
     #pass #아무것도 하지 않고 통과함
 
 close_canvas()
