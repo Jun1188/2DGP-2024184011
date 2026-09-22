@@ -64,12 +64,12 @@ character = load_image('character.png')
 grass = load_image('grass.png')
 clear_canvas()
 
-loop = 3
-while loop > 0:
-   
+loop = 2
+for i in range(loop):
     RectMove()
+for i in range(loop):
     CircleMove()
-    loop -= 1
+
 
     #pass #아무것도 하지 않고 통과함
 
