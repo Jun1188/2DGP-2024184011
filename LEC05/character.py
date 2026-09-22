@@ -111,7 +111,7 @@ character = load_image('character.png')
 grass = load_image('grass.png')
 clear_canvas()
 
-loop = 2
+loop = 5
 x, y = 0, 90
 sideR = 300
 for i in range(loop):
@@ -126,6 +126,7 @@ side = 400
 x, y = interpolate_draw(x, y, x - sideR, y)
 for i in range(loop):
     x, y = TriangleMove(x, y, side)
+    side -= 100/loop
 
     #pass #아무것도 하지 않고 통과함
 
