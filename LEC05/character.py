@@ -8,7 +8,7 @@ def drawCall(x,y):
     grass.draw(400, 30)
     character.draw(x, y)
     update_canvas()
-        
+    print(f"{x}, {y}")
     delay(0.02)
 
 def interpolate_draw(x1, y1, x_target, y_target):
@@ -80,7 +80,7 @@ def CircleMove(x, y, r):
         character.draw(x, y)
         update_canvas()
     
-        delay(0.02)
+        delay(0.01)
     return x, y
 def TriangleMove(x, y, side):#정삼각형임을 가정
     delta = 10
@@ -92,7 +92,7 @@ def TriangleMove(x, y, side):#정삼각형임을 가정
         grass.draw(400, 30)
         character.draw(x, y)
         update_canvas()
-        delay(0.02)
+        delay(0.03)
     x, y = interpolate_draw(x, y, x - side/2, y + side/2)
     x, y = interpolate_draw(x, y, oriX, oriY)
     return x, y
@@ -114,9 +114,9 @@ center = {'x':400, 'y':300, 'r':200}
 x, y = interpolate_draw(x, y, center['x'] + center['r'], center['y'])
 for i in range(loop):
     x, y = CircleMove(x, y, center['r'])
-side = 100
+side = 200
 for i in range(loop):
-    x, y = TriangleMove(x, y, 100)
+    x, y = TriangleMove(x, y, side)
 
     #pass #아무것도 하지 않고 통과함
 
