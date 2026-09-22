@@ -1,9 +1,30 @@
 from pico2d import *
 
+def MovefromTo(x1, y1, x2, y2):
+    mx = x1
+    my = y1
+    delta = 5
+    while x1 == x2 and y1 == y2:
+        if mx + delta < x2:
+            mx += delta
+        elif mx + delta > x2:
+            mx -= delta
+            mx = x2
+        if my + delta < y2:
+                my += delta
+        elif my + delta > y2:
+                my -= delta
+                my = y2
+        clear_canvas()
+        grass.draw(400, 30)
+        character.draw(mx, my)
+        update_canvas()
+    return mx, my
+    
 def RectMove():
     x = 0
     y = 90
-    delta = 20
+    delta = 10
     while x < 800:
         x += delta
         clear_canvas()
@@ -37,12 +58,13 @@ def RectMove():
         update_canvas()
     
         delay(0.02)
+    return x, y
 def CircleMove():
     x = 400
     y = 300
     r = 200
     degree = 0
-    delta = 10
+    delta = 5
     while degree < 360:
         degree += delta
         radian = math.radians(degree)
@@ -66,7 +88,8 @@ clear_canvas()
 
 loop = 2
 for i in range(loop):
-    RectMove()
+    x, y = RectMove()
+MovefromTo(x, y, 400, 300)
 for i in range(loop):
     CircleMove()
 
