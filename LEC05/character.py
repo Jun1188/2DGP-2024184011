@@ -28,11 +28,12 @@ def interpolate_draw(x1, y1, x_target, y_target):
     return interp_x, interp_y
         
     
-def RectMove():
-    x = 0
-    y = 90
+def RectMove(x, y, side):#정사각형으로 가정
+    
     delta = 10
-    while x < 800:
+    fixedX = x
+    fixedY = y
+    while x < fixedX + side:
         x += delta
         clear_canvas()
         grass.draw(400, 30)
@@ -40,8 +41,8 @@ def RectMove():
         update_canvas()
     
         delay(0.01)
-    
-    while y < 600:
+    fixedX = x
+    while y < fixedY + side:
         y += delta  
         clear_canvas()
         grass.draw(400, 30)
@@ -49,7 +50,8 @@ def RectMove():
         update_canvas()
     
         delay(0.01)
-    while x > 0:
+    fixedY = y
+    while x > fixedX - side:
         x -= delta
         clear_canvas()
         grass.draw(400, 30)
@@ -57,7 +59,8 @@ def RectMove():
         update_canvas()
     
         delay(0.01)
-    while y > 90:
+
+    while y > fixedY - side:
         y -= delta
         clear_canvas()
         grass.draw(400, 30)
@@ -65,6 +68,7 @@ def RectMove():
         update_canvas()
     
         delay(0.01)
+    
     return x, y
 def CircleMove(x, y, r):
     
@@ -108,12 +112,16 @@ grass = load_image('grass.png')
 clear_canvas()
 
 loop = 2
+x, y = 0, 90
+sideR = 600
 for i in range(loop):
-    x, y = RectMove()
+    x, y = RectMove(x, y, sideR)
+    sideR -= 10
 center = {'x':400, 'y':300, 'r':200}
 x, y = interpolate_draw(x, y, center['x'] + center['r'], center['y'])
 for i in range(loop):
     x, y = CircleMove(x, y, center['r'])
+    center['r'] -= 10
 side = 200
 for i in range(loop):
     x, y = TriangleMove(x, y, side)
