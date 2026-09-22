@@ -9,8 +9,8 @@ character = load_image('character.png')
 # grass = load_image('grass.png')
 clear_canvas()
 
-character.draw(x, y)
-update_canvas()
+while true:
+    pass #아무것도 하지 않고 통과함
 
 close_canvas()
 
