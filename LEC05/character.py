@@ -1,5 +1,8 @@
 from pico2d import *
 
+delayTime = 0.02
+windowH = 600
+windowW = 800
 
 
 class Circle:
@@ -8,7 +11,6 @@ class Circle:
         self.y = y
         self.r = r
 
-delayTime = 0.02
 
 def drawCall(x,y, deltatime = 1):
 
@@ -38,7 +40,7 @@ def interpolate_draw(x1, y1, x_target, y_target):
     
 def RectMove(x, y, side):#정사각형으로 가정
     
-    delta = 10
+    delta = side / 10
     fixedX = x
     fixedY = y
     while x < fixedX + side:
@@ -70,7 +72,7 @@ def CircleMove(x, y, r):
         drawCall(x, y, delta/(delta + 2))
     return x, y
 def TriangleMove(x, y, side):#정삼각형임을 가정
-    delta = 10
+    delta = side / 5
     startX = x
     while x < startX + side:
         x += delta
@@ -80,8 +82,7 @@ def TriangleMove(x, y, side):#정삼각형임을 가정
     
     return x, y
     
-windowH = 600
-windowW = 800
+
 
 open_canvas(windowW, windowH)
 
