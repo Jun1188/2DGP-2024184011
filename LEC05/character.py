@@ -113,16 +113,17 @@ clear_canvas()
 
 loop = 2
 x, y = 0, 90
-sideR = 600
+sideR = 300
 for i in range(loop):
     x, y = RectMove(x, y, sideR)
-    sideR -= 10
+    sideR -= 100/loop
 center = {'x':400, 'y':300, 'r':200}
 x, y = interpolate_draw(x, y, center['x'] + center['r'], center['y'])
 for i in range(loop):
     x, y = CircleMove(x, y, center['r'])
-    center['r'] -= 10
-side = 200
+    center['r'] -= 100/loop
+side = 400
+x, y = interpolate_draw(x, y, x - sideR, y)
 for i in range(loop):
     x, y = TriangleMove(x, y, side)
 
