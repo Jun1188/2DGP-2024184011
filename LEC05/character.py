@@ -1,25 +1,45 @@
 from pico2d import *
 
-def MovefromTo(x1, y1, x2, y2):
-    mx = x1
-    my = y1
-    delta = 5
-    while x1 == x2 and y1 == y2:
-        if mx + delta < x2:
-            mx += delta
-        elif mx + delta > x2:
-            mx -= delta
-            mx = x2
-        if my + delta < y2:
-                my += delta
-        elif my + delta > y2:
-                my -= delta
-                my = y2
-        clear_canvas()
-        grass.draw(400, 30)
-        character.draw(mx, my)
-        update_canvas()
-    return mx, my
+
+
+def drawCall(x,y):
+
+    clear_canvas()
+    grass.draw(400, 30)
+    character.draw(x, y)
+    update_canvas()
+        
+    delay(0.02)
+
+def lagrange_interpolation(t_points, x_points, y_points, target_t):
+    """
+    매개변수 t를 기준으로 x와 y 변수를 동시에 라그랑주 보간합니다.
+    :param t_points: 매개변수(예: 시간, 0~1 사이의 비율 등) 리스트
+    :param x_points: 각 t점에 대응하는 x 좌표 리스트
+    :param y_points: 각 t점에 대응하는 y 좌표 리스트
+    :param target_t: 보정된 값을 얻고자 하는 현재 시점 t
+    :return: 보정된 (interpolated_x, interpolated_y) 튜플
+    """
+    n = len(t_points)
+    interpolated_x = 0.0
+    interpolated_y = 0.0
+
+    for i in range(n):
+        # 기저 다항식 L_i(t) 계산
+        term_t = 1.0
+        for j in range(n):
+            if i != j:
+                term_t *= (target_t - t_points[j]) / (t_points[i] - t_points[j])
+        
+        # x와 y 성분에 각각 가중치(기저 다항식)를 곱해 누적 합산
+        interpolated_x += x_points[i] * term_t
+        interpolated_y += y_points[i] * term_t
+        drawCall(interpolated_x, interpolated_y)
+
+    return interpolated_x, interpolated_y
+
+
+        
     
 def RectMove():
     x = 0
