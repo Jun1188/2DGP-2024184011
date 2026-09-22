@@ -17,10 +17,12 @@ def interpolate_draw(x1, y1, x_target, y_target):
     dx = x_target - x1
     dy = y_target - y1
     t = 10
+    interp_x =x1
+    interp_y = y1
     # 선형 보간 처리
     for i in range(t):
-        interp_x = x1 + (1/t) * dx
-        interp_y = y1 + (1/t) * dy
+        interp_x = interp_x + (1/t) * dx
+        interp_y = interp_y + (1/t) * dy
         drawCall(interp_x, interp_y)
     
     return interp_x, interp_y
@@ -64,10 +66,8 @@ def RectMove():
     
         delay(0.02)
     return x, y
-def CircleMove():
-    x = 400
-    y = 300
-    r = 200
+def CircleMove(x, y, r):
+    
     degree = 0
     delta = 5
     while degree < 360:
@@ -81,6 +81,22 @@ def CircleMove():
         update_canvas()
     
         delay(0.02)
+    return x, y
+def TriangleMove(x, y, side):#정삼각형임을 가정
+    delta = 10
+    oriX = x
+    oriY = y
+    while x < side:
+        x += delta
+        clear_canvas()
+        grass.draw(400, 30)
+        character.draw(x, y)
+        update_canvas()
+        delay(0.02)
+    x, y = interpolate_draw(x, y, x - side/2, y + side/2)
+    x, y = interpolate_draw(x, y, oriX, oriY)
+    return x, y
+    
 
 
 open_canvas(800, 600)
@@ -91,14 +107,16 @@ character = load_image('character.png')
 grass = load_image('grass.png')
 clear_canvas()
 
-loop = 2
+loop = 1
 for i in range(loop):
     x, y = RectMove()
-center = {x:400, y:300}
-interpolate_draw(x, y, center[x], center[y])
+center = {'x':400, 'y':300, 'r':200}
+x, y = interpolate_draw(x, y, center['x'] + center['r'], center['y'])
 for i in range(loop):
-    CircleMove()
-
+    x, y = CircleMove(x, y, center['r'])
+side = 100
+for i in range(loop):
+    x, y = TriangleMove(x, y, 100)
 
     #pass #아무것도 하지 않고 통과함
 
