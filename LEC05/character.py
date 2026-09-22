@@ -9,7 +9,11 @@ character = load_image('character.png')
 # grass = load_image('grass.png')
 clear_canvas()
 
-while true:
+while True:
+    #move_circle()
+    #move_rect()
+    #move_triangle() 
+    #코딩 고수는 함수를 만들고 나중에 호출한다 : pseudo code
     pass #아무것도 하지 않고 통과함
 
 close_canvas()
