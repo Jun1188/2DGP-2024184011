@@ -8,7 +8,5 @@ open_canvas(800, 600)
 character = load_image('character.png')
 # grass = load_image('grass.png')
 
-
-
 close_canvas()
 
