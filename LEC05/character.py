@@ -11,34 +11,19 @@ def drawCall(x,y):
         
     delay(0.02)
 
-def lagrange_interpolation(t_points, x_points, y_points, target_t):
-    """
-    매개변수 t를 기준으로 x와 y 변수를 동시에 라그랑주 보간합니다.
-    :param t_points: 매개변수(예: 시간, 0~1 사이의 비율 등) 리스트
-    :param x_points: 각 t점에 대응하는 x 좌표 리스트
-    :param y_points: 각 t점에 대응하는 y 좌표 리스트
-    :param target_t: 보정된 값을 얻고자 하는 현재 시점 t
-    :return: 보정된 (interpolated_x, interpolated_y) 튜플
-    """
-    n = len(t_points)
-    interpolated_x = 0.0
-    interpolated_y = 0.0
-
-    for i in range(n):
-        # 기저 다항식 L_i(t) 계산
-        term_t = 1.0
-        for j in range(n):
-            if i != j:
-                term_t *= (target_t - t_points[j]) / (t_points[i] - t_points[j])
-        
-        # x와 y 성분에 각각 가중치(기저 다항식)를 곱해 누적 합산
-        interpolated_x += x_points[i] * term_t
-        interpolated_y += y_points[i] * term_t
-        drawCall(interpolated_x, interpolated_y)
-
-    return interpolated_x, interpolated_y
-
-
+def interpolate_draw(x1, y1, x_target, y_target):
+    
+    # 상대 변위 벡터 추출
+    dx = x_target - x1
+    dy = y_target - y1
+    t = 10
+    # 선형 보간 처리
+    for i in range(t):
+        interp_x = x1 + (1/t) * dx
+        interp_y = y1 + (1/t) * dy
+        drawCall(interp_x, interp_y)
+    
+    return interp_x, interp_y
         
     
 def RectMove():
@@ -109,7 +94,8 @@ clear_canvas()
 loop = 2
 for i in range(loop):
     x, y = RectMove()
-MovefromTo(x, y, 400, 300)
+center = {x:400, y:300}
+interpolate_draw(x, y, center[x], center[y])
 for i in range(loop):
     CircleMove()
 
