@@ -1,6 +1,5 @@
 from pico2d import *
 
-
 def RectMove():
     x = 0
     y = 90
@@ -13,14 +12,33 @@ def RectMove():
         update_canvas()
     
         delay(0.01)
+    
+    while y < 600:
+        y += delta  
+        clear_canvas()
+        grass.draw(400, 30)
+        character.draw(x, y)
+        update_canvas()
+    
+        delay(0.01)
+    while x > 0:
+        x -= delta
+        clear_canvas()
+        grass.draw(400, 30)
+        character.draw(x, y)
+        update_canvas()
+    
+        delay(0.01)
+    while y > 90:
+        y -= delta
+        clear_canvas()
+        grass.draw(400, 30)
+        character.draw(x, y)
+        update_canvas()
+    
+        delay(0.01)
 
-def move_circle():
-    print("circle")
-    return
 
-def move_triangle():
-    print("tirangle")
-    return
 
 open_canvas(800, 600)
 
@@ -30,9 +48,7 @@ character = load_image('character.png')
 grass = load_image('grass.png')
 clear_canvas()
 
-loop = 10
-x = 0
-y = 90
+loop = 3
 while loop > 0:
    
     RectMove()
