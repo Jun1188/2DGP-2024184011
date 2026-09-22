@@ -1,5 +1,13 @@
 from pico2d import *
 
+
+
+class Circle:
+    def __init__(self, x = 400, y = 300, r = 100):
+        self.x = x
+        self.y = y
+        self.r = r
+
 delayTime = 0.02
 
 def drawCall(x,y, deltatime = 1):
@@ -82,17 +90,17 @@ character = load_image('character.png')
 grass = load_image('grass.png')
 clear_canvas()
 
-loop = 5
+loop = 3
 x, y = 0, 90
 sideR = 300
 for i in range(loop):
     x, y = RectMove(x, y, sideR)
     sideR -= 100/loop
-center = {'x':400, 'y':300, 'r':200}
-x, y = interpolate_draw(x, y, center['x'] + center['r'], center['y'])
+center = Circle(400, 300, 100)
+x, y = interpolate_draw(x, y, center.x + center.r, center.y)
 for i in range(loop):
-    x, y = CircleMove(x, y, center['r'])
-    center['r'] -= 100/loop
+    x, y = CircleMove(x, y, center.r)
+    center.r -= 100/loop
 side = 400
 x, y = interpolate_draw(x, y, x - sideR, y)
 for i in range(loop):
