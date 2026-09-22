@@ -8,7 +8,7 @@ def drawCall(x,y):
     grass.draw(400, 30)
     character.draw(x, y)
     update_canvas()
-    print(f"{x}, {y}")
+    #print(f"{x}, {y}")
     delay(0.02)
 
 def interpolate_draw(x1, y1, x_target, y_target):
@@ -39,7 +39,7 @@ def RectMove():
         character.draw(x, y)
         update_canvas()
     
-        delay(0.02)
+        delay(0.01)
     
     while y < 600:
         y += delta  
@@ -48,7 +48,7 @@ def RectMove():
         character.draw(x, y)
         update_canvas()
     
-        delay(0.02)
+        delay(0.01)
     while x > 0:
         x -= delta
         clear_canvas()
@@ -56,7 +56,7 @@ def RectMove():
         character.draw(x, y)
         update_canvas()
     
-        delay(0.02)
+        delay(0.01)
     while y > 90:
         y -= delta
         clear_canvas()
@@ -64,7 +64,7 @@ def RectMove():
         character.draw(x, y)
         update_canvas()
     
-        delay(0.02)
+        delay(0.01)
     return x, y
 def CircleMove(x, y, r):
     
@@ -84,8 +84,8 @@ def CircleMove(x, y, r):
     return x, y
 def TriangleMove(x, y, side):#정삼각형임을 가정
     delta = 10
-    
-    while x < side:
+    startX = x
+    while x < startX + side:
         x += delta
         clear_canvas()
         grass.draw(400, 30)
@@ -94,13 +94,7 @@ def TriangleMove(x, y, side):#정삼각형임을 가정
         delay(0.02)
     x, y = interpolate_draw(x, y, x - side/2, y + side/2)
     x, y = interpolate_draw(x, y, x - side/2, y - side/2)
-    while x < side:
-            x += delta
-            clear_canvas()
-            grass.draw(400, 30)
-            character.draw(x, y)
-            update_canvas()
-            delay(0.02)
+    
     return x, y
     
 
@@ -113,7 +107,7 @@ character = load_image('character.png')
 grass = load_image('grass.png')
 clear_canvas()
 
-loop = 1
+loop = 2
 for i in range(loop):
     x, y = RectMove()
 center = {'x':400, 'y':300, 'r':200}
