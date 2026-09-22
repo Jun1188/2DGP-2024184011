@@ -84,17 +84,23 @@ def CircleMove(x, y, r):
     return x, y
 def TriangleMove(x, y, side):#정삼각형임을 가정
     delta = 10
-    oriX = x
-    oriY = y
+    
     while x < side:
         x += delta
         clear_canvas()
         grass.draw(400, 30)
         character.draw(x, y)
         update_canvas()
-        delay(0.03)
+        delay(0.02)
     x, y = interpolate_draw(x, y, x - side/2, y + side/2)
-    x, y = interpolate_draw(x, y, oriX, oriY)
+    x, y = interpolate_draw(x, y, x - side/2, y - side/2)
+    while x < side:
+            x += delta
+            clear_canvas()
+            grass.draw(400, 30)
+            character.draw(x, y)
+            update_canvas()
+            delay(0.02)
     return x, y
     
 
