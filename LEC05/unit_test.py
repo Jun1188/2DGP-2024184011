@@ -9,4 +9,4 @@ while degree < 360:
     radian = math.radians(degree)
     x = 400 + r * math.cos(radian)
     y = 300 + r * math.sin(radian)
-    print(f"{x}, {y}")
+    print(f"{400 - x}, {300 - y}")
