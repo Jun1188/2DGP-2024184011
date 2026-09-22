@@ -80,9 +80,10 @@ def TriangleMove(x, y, side):#정삼각형임을 가정
     
     return x, y
     
+windowH = 600
+windowW = 800
 
-
-open_canvas(800, 600)
+open_canvas(windowW, windowH)
 
 # 여기를 채우시오.
 
@@ -92,11 +93,11 @@ clear_canvas()
 
 loop = 3
 x, y = 0, 90
-sideR = 300
+sideR = windowH /2 
 for i in range(loop):
     x, y = RectMove(x, y, sideR)
     sideR -= 100/loop
-center = Circle(400, 300, 100)
+center = Circle(windowW/2, windowH/2, windowH/4)
 x, y = interpolate_draw(x, y, center.x + center.r, center.y)
 for i in range(loop):
     x, y = CircleMove(x, y, center.r)
