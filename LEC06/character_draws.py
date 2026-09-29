@@ -40,7 +40,7 @@ def interpolate_draw(x1, y1, x_target, y_target):
     
 def RectMove(x, y, side):#정사각형으로 가정
     
-    delta = side / 100
+    delta = side / 100 #delta time -> (current time - before time)
     fixedX = x
     fixedY = y
     while x < fixedX + side:
