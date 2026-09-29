@@ -12,7 +12,7 @@ class Circle:
         self.r = r
 
 
-def drawCall(x,y, deltatime = 1):
+def drawCall_character(x,y, deltatime = 1):
 
     clear_canvas()
     grass.draw(400, 30)
@@ -33,7 +33,7 @@ def interpolate_draw(x1, y1, x_target, y_target):
     for i in range(t):
         interp_x = interp_x + (1/t) * dx
         interp_y = interp_y + (1/t) * dy
-        drawCall(interp_x, interp_y, (1/t)*2)
+        drawCall_character(interp_x, interp_y, (1/t)*2)
     
     return interp_x, interp_y
         
@@ -45,19 +45,19 @@ def RectMove(x, y, side):#정사각형으로 가정
     fixedY = y
     while x < fixedX + side:
         x += delta
-        drawCall(x, y, 1/4)
+        drawCall_character(x, y, 1/4)
     fixedX = x
     while y < fixedY + side:
         y += delta  
-        drawCall(x, y, 1/4)
+        drawCall_character(x, y, 1/4)
     fixedY = y
     while x > fixedX - side:
         x -= delta
-        drawCall(x, y, 1/4)
+        drawCall_character(x, y, 1/4)
 
-    while y > fixedY - side:
+    while y > fixedY - side: 
         y -= delta
-        drawCall(x, y, 1/4)
+        drawCall_character(x, y, 1/4)
     
     return x, y
 def CircleMove(x, y, r):
@@ -69,14 +69,14 @@ def CircleMove(x, y, r):
         radian = math.radians(degree)
         x = 400 + r * math.cos(radian)
         y = 300 + r * math.sin(radian)
-        drawCall(x, y, delta/(delta + 2))
+        drawCall_character(x, y, delta/(delta + 2))
     return x, y
 def TriangleMove(x, y, side):#정삼각형임을 가정
     delta = side / 30
     startX = x
     while x < startX + side:
         x += delta
-        drawCall(x, y, (1 / delta) * 6)
+        drawCall_character(x, y, (1 / delta) * 6)
     x, y = interpolate_draw(x, y, x - side/2, y + side/2)
     x, y = interpolate_draw(x, y, x - side/2, y - side/2)
     

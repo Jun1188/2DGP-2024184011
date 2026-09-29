@@ -97,3 +97,4 @@ while True:
     x, y = triangle_move(x, y, triangle_side)
 
     x, y = interpolate_draw(x, y, *rect_start)
+
