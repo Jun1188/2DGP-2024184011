@@ -15,6 +15,8 @@ DISPLAY_HEIGHT = 60  # 기존 300픽셀에서 1/5 크기로 줄인다.
 DISPLAY_MAX_WIDTH = 100
 REPEAT_COUNT = 5
 PAUSE_SECONDS = 1.0
+BODY_GAP = 5
+ROLL_REACH = 22
 
 # 각 항목은 원본 시트의 (왼쪽, 아래, 너비, 높이)이다.
 SOLDIER_IDLE = (
@@ -80,11 +82,48 @@ ANIMATIONS = {
     "sonic_roll": (SONIC_ROLL, 12),
 }
 
+def displayed_size(frame):
+    _, _, width, height = frame
+    scale = min(DISPLAY_HEIGHT / height, DISPLAY_MAX_WIDTH / width)
+    return width * scale, height * scale
+
+
+def hit_box(frame, x, foot_y):
+    width, height = displayed_size(frame)
+    return (x - width / 2, foot_y, x + width / 2, foot_y + height)
+
+
+def boxes_overlap(first, second):
+    return (first[0] < second[2] and first[2] > second[0]
+            and first[1] < second[3] and first[3] > second[1])
+
+
+def keep_apart(soldier_frame, soldier_x, sonic_frame, sonic_x,
+               sonic_foot_y):
+    soldier_box = hit_box(soldier_frame, soldier_x, GROUND_Y)
+    sonic_box = hit_box(sonic_frame, sonic_x, sonic_foot_y)
+    # 점프로 두 박스의 높이가 분리되면 Sonic이 위로 지나갈 수 있다.
+    if sonic_box[1] >= soldier_box[3] or sonic_box[3] <= soldier_box[1]:
+        return sonic_x
+    if sonic_box[0] >= soldier_box[2] + BODY_GAP:
+        return sonic_x
+    if sonic_box[2] <= soldier_box[0] - BODY_GAP:
+        return sonic_x
+
+    sonic_width, _ = displayed_size(sonic_frame)
+    if sonic_x >= soldier_x:
+        return soldier_box[2] + BODY_GAP + sonic_width / 2
+    return soldier_box[0] - BODY_GAP - sonic_width / 2
+
+
+def roll_attack_box(sonic_box):
+    return (sonic_box[2], sonic_box[1],
+            sonic_box[2] + ROLL_REACH, sonic_box[3])
+
+
 def draw_character(image, frame, x, foot_y, direction):
     left, bottom, width, height = frame
-    scale = min(DISPLAY_HEIGHT / height, DISPLAY_MAX_WIDTH / width)
-    draw_width = width * scale
-    draw_height = height * scale
+    draw_width, draw_height = displayed_size(frame)
     flip = "h" if direction == "left" else ""
     image.clip_composite_draw(
         left, bottom, width, height, 0, flip,
@@ -114,18 +153,19 @@ STANDOFF = {
 
 STRIKE = {
     "soldier": ("soldier_attack", 330, 330, "right"),
-    "sonic": ("sonic_jump", 470, 250, "left"),
+    "sonic": ("sonic_jump", 470, 200, "left"),
     "jump": True,
 }
 
 COUNTER = {
     "soldier": ("soldier_hurt", 330, 390, "right"),
-    "sonic": ("sonic_roll", 250, 340, "right"),
+    "sonic": ("sonic_roll", 200, 340, "right"),
+    "counter": True,
 }
 
 RETURN = {
     "soldier": ("soldier_walk", 390, 130, "left"),
-    "sonic": ("sonic_run", 340, 670, "right"),
+    "sonic": ("sonic_run", 330, 670, "right"),
 }
 PHASES = (APPROACH, STANDOFF, STRIKE, COUNTER, RETURN)
 
@@ -135,34 +175,64 @@ def frame_at(animation_name, elapsed):
     return frames[frame_number % len(frames)]
 
 
-def phase_duration(phase):
+def phase_duration(phase, hit_at=None):
     soldier_name = phase["soldier"][0]
     sonic_name = phase["sonic"][0]
     soldier_frames, soldier_fps = ANIMATIONS[soldier_name]
     sonic_frames, sonic_fps = ANIMATIONS[sonic_name]
-    return max(len(soldier_frames) / soldier_fps,
-               len(sonic_frames) / sonic_fps) * REPEAT_COUNT
+    soldier_duration = len(soldier_frames) / soldier_fps * REPEAT_COUNT
+    sonic_duration = len(sonic_frames) / sonic_fps * REPEAT_COUNT
+    if phase.get("counter") and hit_at is not None:
+        soldier_duration += hit_at
+    return max(soldier_duration, sonic_duration)
 
 def position_at(character, elapsed, duration):
     _, start_x, end_x, _ = character
     progress = min(elapsed / duration, 1.0)
     return start_x + (end_x - start_x) * progress
 
-def draw_phase(phase, elapsed, grass, soldier, sonic):
-    duration = phase_duration(phase)
+def draw_phase(phase, elapsed, grass, soldier, sonic, hit_at=None):
+    duration = phase_duration(phase, hit_at)
     active_time = min(elapsed, duration)  # 남은 1초 동안 마지막 자세로 멈춘다.
     soldier_data = phase["soldier"]
     sonic_data = phase["sonic"]
     progress = active_time / duration
-    jump_height = 140 * sin(pi * progress) if phase.get("jump") else 0
+    jump_height = 90 * sin(pi * progress) if phase.get("jump") else 0
+    soldier_x = position_at(soldier_data, active_time, duration)
+    soldier_frame = frame_at(soldier_data[0], active_time)
+    sonic_frames, sonic_fps = ANIMATIONS[sonic_data[0]]
+    sonic_duration = len(sonic_frames) / sonic_fps * REPEAT_COUNT
+    sonic_x = position_at(sonic_data, active_time, sonic_duration)
+    sonic_frame = frame_at(sonic_data[0], active_time)
+
+    if phase.get("counter"):
+        if hit_at is None:
+            soldier_x = soldier_data[1]
+            soldier_frame = frame_at("soldier_idle", active_time)
+        else:
+            hurt_frames, hurt_fps = ANIMATIONS["soldier_hurt"]
+            hurt_duration = len(hurt_frames) / hurt_fps * REPEAT_COUNT
+            hurt_elapsed = active_time - hit_at
+            soldier_x = position_at(soldier_data, hurt_elapsed, hurt_duration)
+            soldier_frame = frame_at("soldier_hurt", hurt_elapsed)
+
+    sonic_foot_y = GROUND_Y + jump_height
+    sonic_x = keep_apart(soldier_frame, soldier_x, sonic_frame,
+                         sonic_x, sonic_foot_y)
+    if phase.get("counter") and hit_at is None:
+        soldier_box = hit_box(soldier_frame, soldier_x, GROUND_Y)
+        sonic_box = hit_box(sonic_frame, sonic_x, sonic_foot_y)
+        if boxes_overlap(roll_attack_box(sonic_box), soldier_box):
+            hit_at = active_time
+            soldier_frame = frame_at("soldier_hurt", 0)
+
     draw_scene(
         grass, soldier, sonic,
-        frame_at(soldier_data[0], active_time),
-        frame_at(sonic_data[0], active_time),
-        position_at(soldier_data, active_time, duration),
-        position_at(sonic_data, active_time, duration),
+        soldier_frame, sonic_frame,
+        soldier_x, sonic_x,
         soldier_data[3], sonic_data[3], jump_height,
     )
+    return hit_at
 
 def main():
     open_canvas(CANVAS_WIDTH, CANVAS_HEIGHT)
@@ -172,6 +242,7 @@ def main():
         grass = load_image(str(RESOURCE_DIR / "grass.png"))
         phase_index = 0
         phase_start = perf_counter()
+        hit_at = None
         running = True
 
         while running:
@@ -185,13 +256,14 @@ def main():
 
             phase = PHASES[phase_index]
             elapsed = perf_counter() - phase_start
-            if elapsed >= phase_duration(phase) + PAUSE_SECONDS:
+            if elapsed >= phase_duration(phase, hit_at) + PAUSE_SECONDS:
                 phase_index = (phase_index + 1) % len(PHASES)
                 phase_start = perf_counter()
+                hit_at = None
                 phase = PHASES[phase_index]
                 elapsed = 0.0
 
-            draw_phase(phase, elapsed, grass, soldier, sonic)
+            hit_at = draw_phase(phase, elapsed, grass, soldier, sonic, hit_at)
             delay(1 / 60)
     finally:
         close_canvas()
