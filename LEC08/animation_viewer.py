@@ -43,6 +43,14 @@ SOLDIER_HURT = (
     (240, 143, 16, 18), (340, 143, 16, 18),
 )
 
+SOLDIER_SHOOT = (
+    (41, 243, 19, 18), (141, 243, 17, 18),
+    (241, 243, 17, 19), (341, 243, 17, 18),
+    (441, 243, 22, 18), (541, 243, 21, 17),
+    (641, 243, 20, 17), (741, 243, 36, 18),
+    (841, 242, 23, 19),
+)
+
 # Sonic 시트는 행마다 프레임 폭과 높이가 달라 개별 좌표를 사용한다.
 SONIC_IDLE = (
     (1, 447, 29, 39), (31, 447, 26, 38),
@@ -70,16 +78,24 @@ SONIC_ROLL = (
     (268, 325, 30, 30),
 )
 
+SONIC_SPIN = (
+    (1, 251, 29, 35), (36, 251, 30, 35),
+    (74, 251, 31, 35), (111, 251, 31, 36),
+    (149, 251, 30, 35), (186, 251, 31, 36),
+)
+
 # (프레임들, 초당 프레임 수)
 ANIMATIONS = {
     "soldier_idle": (SOLDIER_IDLE, 6),
     "soldier_walk": (SOLDIER_WALK, 9),
     "soldier_attack": (SOLDIER_ATTACK, 12),
     "soldier_hurt": (SOLDIER_HURT, 8),
+    "soldier_shoot": (SOLDIER_SHOOT, 12),
     "sonic_idle": (SONIC_IDLE, 6),
     "sonic_run": (SONIC_RUN, 12),
     "sonic_jump": (SONIC_JUMP, 9),
     "sonic_roll": (SONIC_ROLL, 12),
+    "sonic_spin": (SONIC_SPIN, 10),
 }
 
 def displayed_size(frame):
