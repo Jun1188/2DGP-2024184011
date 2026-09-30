@@ -67,3 +67,15 @@ SONIC_ROLL = (
     (193, 326, 30, 29), (230, 326, 31, 29),
     (268, 325, 30, 30),
 )
+
+# (프레임들, 초당 프레임 수)
+ANIMATIONS = {
+    "soldier_idle": (SOLDIER_IDLE, 6),
+    "soldier_walk": (SOLDIER_WALK, 9),
+    "soldier_attack": (SOLDIER_ATTACK, 12),
+    "soldier_hurt": (SOLDIER_HURT, 8),
+    "sonic_idle": (SONIC_IDLE, 6),
+    "sonic_run": (SONIC_RUN, 12),
+    "sonic_jump": (SONIC_JUMP, 9),
+    "sonic_roll": (SONIC_ROLL, 12),
+}
