@@ -133,7 +133,10 @@ def keep_apart(soldier_frame, soldier_x, sonic_frame, sonic_x,
     return soldier_box[0] - BODY_GAP - sonic_width / 2
 
 
-def roll_attack_box(sonic_box):
+def roll_attack_box(sonic_box, direction):
+    if direction == "left":
+        return (sonic_box[0] - ROLL_REACH, sonic_box[1],
+                sonic_box[0], sonic_box[3])
     return (sonic_box[2], sonic_box[1],
             sonic_box[2] + ROLL_REACH, sonic_box[3])
 
@@ -159,34 +162,34 @@ def draw_scene(soldier, sonic, soldier_frame, sonic_frame,
 
 # 각 캐릭터 값: (애니메이션, 시작 x, 끝 x, 바라보는 방향)
 APPROACH = {
-    "soldier": ("soldier_walk", 130, 330, "right"),
-    "sonic": ("sonic_run", 670, 470, "left"),
+    "soldier": ("soldier_walk", 130, 225, "right"),
+    "sonic": ("sonic_run", 650, 610, "left"),
 }
 STANDOFF = {
-    "soldier": ("soldier_idle", 330, 330, "right"),
-    "sonic": ("sonic_idle", 470, 470, "left"),
+    "soldier": ("soldier_idle", 225, 225, "right"),
+    "sonic": ("sonic_idle", 610, 610, "left"),
 }
 
 RANGED = {
-    "soldier": ("soldier_shoot", 330, 330, "right"),
-    "sonic": ("sonic_spin", 470, 500, "left"),
+    "soldier": ("soldier_shoot", 225, 225, "right"),
+    "sonic": ("sonic_spin", 610, 650, "left"),
 }
 
 STRIKE = {
-    "soldier": ("soldier_attack", 330, 330, "right"),
-    "sonic": ("sonic_jump", 500, 200, "left"),
+    "soldier": ("soldier_attack", 225, 225, "right"),
+    "sonic": ("sonic_jump", 650, 620, "left"),
     "jump": True,
 }
 
 COUNTER = {
-    "soldier": ("soldier_hurt", 330, 390, "right"),
-    "sonic": ("sonic_roll", 200, 340, "right"),
+    "soldier": ("soldier_hurt", 225, 180, "right"),
+    "sonic": ("sonic_roll", 620, 480, "left"),
     "counter": True,
 }
 
 RETURN = {
-    "soldier": ("soldier_walk", 390, 130, "left"),
-    "sonic": ("sonic_run", 330, 670, "right"),
+    "soldier": ("soldier_walk", 180, 130, "left"),
+    "sonic": ("sonic_run", 480, 650, "right"),
 }
 # 양쪽 캐릭터는 각 장면에서 자신의 동작을 5회 재생한다.
 # 장면 끝의 정지 시간은 PAUSE_SECONDS이며, 마지막 장면 뒤에는 처음으로 돌아간다.
@@ -253,7 +256,8 @@ def draw_phase(phase, elapsed, soldier, sonic, hit_at=None):
     if phase.get("counter") and hit_at is None:
         soldier_box = hit_box(soldier_frame, soldier_x, GROUND_Y)
         sonic_box = hit_box(sonic_frame, sonic_x, sonic_foot_y)
-        if boxes_overlap(roll_attack_box(sonic_box), soldier_box):
+        if boxes_overlap(roll_attack_box(sonic_box, sonic_data[3]),
+                         soldier_box):
             hit_at = active_time
             reaction_duration = phase_duration(phase, hit_at) - hit_at
             soldier_frame = frame_at("soldier_hurt", 0, reaction_duration)
