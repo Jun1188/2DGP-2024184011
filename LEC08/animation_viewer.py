@@ -90,3 +90,14 @@ def draw_character(image, frame, x, foot_y, direction):
         left, bottom, width, height, 0, flip,
         x, foot_y + draw_height / 2, draw_width, draw_height,
     )
+
+def draw_scene(grass, soldier, sonic, soldier_frame, sonic_frame,
+               soldier_x, sonic_x, soldier_direction, sonic_direction,
+               sonic_jump_height):
+    clear_canvas()
+    grass.draw(CANVAS_WIDTH / 2, 31)
+    draw_character(soldier, soldier_frame, soldier_x, GROUND_Y,
+                   soldier_direction)
+    draw_character(sonic, sonic_frame, sonic_x,
+                   GROUND_Y + sonic_jump_height, sonic_direction)
+    update_canvas()
