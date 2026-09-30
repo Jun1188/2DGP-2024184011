@@ -11,8 +11,8 @@ RESOURCE_DIR = Path(__file__).resolve().parent
 CANVAS_WIDTH = 800
 CANVAS_HEIGHT = 600
 GROUND_Y = 85
-DISPLAY_HEIGHT = 300  # 실제 캐릭터의 높이를 화면 높이의 절반으로 표시한다.
-DISPLAY_MAX_WIDTH = 500
+DISPLAY_HEIGHT = 60  # 기존 300픽셀에서 1/5 크기로 줄인다.
+DISPLAY_MAX_WIDTH = 100
 REPEAT_COUNT = 5
 PAUSE_SECONDS = 1.0
 
