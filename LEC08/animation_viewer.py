@@ -117,3 +117,8 @@ STRIKE = {
     "sonic": ("sonic_jump", 470, 250, "left"),
     "jump": True,
 }
+
+COUNTER = {
+    "soldier": ("soldier_hurt", 330, 390, "right"),
+    "sonic": ("sonic_roll", 250, 340, "right"),
+}
