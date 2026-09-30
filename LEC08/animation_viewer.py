@@ -1,23 +1,17 @@
-﻿from pico2d import *
+﻿"""두 캐릭터가 정해진 순서로 만나는 애니메이션 뷰어."""
 
-delayTime = 0.02
-windowH = 600
-windowW = 800
+from math import pi, sin
+from pathlib import Path
+from time import perf_counter
 
-frame = 100
-maxFrame = frame * 8
-frameType = 100
+from pico2d import *
 
-open_canvas(windowW, windowH)
+RESOURCE_DIR = Path(__file__).resolve().parent
 
-# 여기를 채우시오.
-
-character = load_image('Soldier.png')
-grass = load_image('grass.png')
-clear_canvas()
-
-
-die = frameType * 0
-angry = frameType * 1
-attack_charge = frameType * 2
-
+CANVAS_WIDTH = 800
+CANVAS_HEIGHT = 600
+GROUND_Y = 85
+DISPLAY_HEIGHT = 300  # 실제 캐릭터의 높이를 화면 높이의 절반으로 표시한다.
+DISPLAY_MAX_WIDTH = 430
+REPEAT_COUNT = 5
+PAUSE_SECONDS = 1.0
