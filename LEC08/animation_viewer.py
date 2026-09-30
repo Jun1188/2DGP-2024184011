@@ -111,3 +111,9 @@ STANDOFF = {
     "soldier": ("soldier_idle", 330, 330, "right"),
     "sonic": ("sonic_idle", 470, 470, "left"),
 }
+
+STRIKE = {
+    "soldier": ("soldier_attack", 330, 330, "right"),
+    "sonic": ("sonic_jump", 470, 250, "left"),
+    "jump": True,
+}
