@@ -142,3 +142,8 @@ def phase_duration(phase):
     sonic_frames, sonic_fps = ANIMATIONS[sonic_name]
     return max(len(soldier_frames) / soldier_fps,
                len(sonic_frames) / sonic_fps) * REPEAT_COUNT
+
+def position_at(character, elapsed, duration):
+    _, start_x, end_x, _ = character
+    progress = min(elapsed / duration, 1.0)
+    return start_x + (end_x - start_x) * progress
