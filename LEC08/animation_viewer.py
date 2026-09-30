@@ -122,3 +122,9 @@ COUNTER = {
     "soldier": ("soldier_hurt", 330, 390, "right"),
     "sonic": ("sonic_roll", 250, 340, "right"),
 }
+
+RETURN = {
+    "soldier": ("soldier_walk", 390, 130, "left"),
+    "sonic": ("sonic_run", 340, 670, "right"),
+}
+PHASES = (APPROACH, STANDOFF, STRIKE, COUNTER, RETURN)
