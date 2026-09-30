@@ -163,3 +163,39 @@ def draw_phase(phase, elapsed, grass, soldier, sonic):
         position_at(sonic_data, active_time, duration),
         soldier_data[3], sonic_data[3], jump_height,
     )
+
+def main():
+    open_canvas(CANVAS_WIDTH, CANVAS_HEIGHT)
+    try:
+        soldier = load_image(str(RESOURCE_DIR / "Soldier.png"))
+        sonic = load_image(str(RESOURCE_DIR / "sonic-sprite.png"))
+        grass = load_image(str(RESOURCE_DIR / "grass.png"))
+        phase_index = 0
+        phase_start = perf_counter()
+        running = True
+
+        while running:
+            for event in get_events():
+                if event.type == SDL_QUIT or (
+                    event.type == SDL_KEYDOWN and event.key == SDLK_ESCAPE
+                ):
+                    running = False
+            if not running:
+                break
+
+            phase = PHASES[phase_index]
+            elapsed = perf_counter() - phase_start
+            if elapsed >= phase_duration(phase) + PAUSE_SECONDS:
+                phase_index = (phase_index + 1) % len(PHASES)
+                phase_start = perf_counter()
+                phase = PHASES[phase_index]
+                elapsed = 0.0
+
+            draw_phase(phase, elapsed, grass, soldier, sonic)
+            delay(1 / 60)
+    finally:
+        close_canvas()
+
+
+if __name__ == "__main__":
+    main()
