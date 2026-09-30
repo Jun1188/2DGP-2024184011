@@ -147,11 +147,10 @@ def draw_character(image, frame, x, foot_y, direction):
         x, foot_y + draw_height / 2, draw_width, draw_height,
     )
 
-def draw_scene(grass, soldier, sonic, soldier_frame, sonic_frame,
+def draw_scene(soldier, sonic, soldier_frame, sonic_frame,
                soldier_x, sonic_x, soldier_direction, sonic_direction,
                sonic_jump_height):
     clear_canvas()
-    grass.draw(CANVAS_WIDTH / 2, 31)
     draw_character(soldier, soldier_frame, soldier_x, GROUND_Y,
                    soldier_direction)
     draw_character(sonic, sonic_frame, sonic_x,
@@ -219,7 +218,7 @@ def position_at(character, elapsed, duration):
     progress = min(elapsed / duration, 1.0)
     return start_x + (end_x - start_x) * progress
 
-def draw_phase(phase, elapsed, grass, soldier, sonic, hit_at=None):
+def draw_phase(phase, elapsed, soldier, sonic, hit_at=None):
     duration = phase_duration(phase, hit_at)
     active_time = min(elapsed, duration)  # 남은 1초 동안 마지막 자세로 멈춘다.
     soldier_data = phase["soldier"]
@@ -263,7 +262,7 @@ def draw_phase(phase, elapsed, grass, soldier, sonic, hit_at=None):
                                  sonic_x, sonic_foot_y)
 
     draw_scene(
-        grass, soldier, sonic,
+        soldier, sonic,
         soldier_frame, sonic_frame,
         soldier_x, sonic_x,
         soldier_data[3], sonic_data[3], jump_height,
@@ -275,7 +274,6 @@ def main():
     try:
         soldier = load_image(str(RESOURCE_DIR / "Soldier.png"))
         sonic = load_image(str(RESOURCE_DIR / "sonic-sprite.png"))
-        grass = load_image(str(RESOURCE_DIR / "grass.png"))
         phase_index = 0
         phase_start = perf_counter()
         hit_at = None
@@ -299,7 +297,7 @@ def main():
                 phase = PHASES[phase_index]
                 elapsed = 0.0
 
-            hit_at = draw_phase(phase, elapsed, grass, soldier, sonic, hit_at)
+            hit_at = draw_phase(phase, elapsed, soldier, sonic, hit_at)
             delay(1 / 60)
     finally:
         close_canvas()
