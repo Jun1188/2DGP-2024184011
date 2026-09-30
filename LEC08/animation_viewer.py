@@ -147,3 +147,19 @@ def position_at(character, elapsed, duration):
     _, start_x, end_x, _ = character
     progress = min(elapsed / duration, 1.0)
     return start_x + (end_x - start_x) * progress
+
+def draw_phase(phase, elapsed, grass, soldier, sonic):
+    duration = phase_duration(phase)
+    active_time = min(elapsed, duration)  # 남은 1초 동안 마지막 자세로 멈춘다.
+    soldier_data = phase["soldier"]
+    sonic_data = phase["sonic"]
+    progress = active_time / duration
+    jump_height = 140 * sin(pi * progress) if phase.get("jump") else 0
+    draw_scene(
+        grass, soldier, sonic,
+        frame_at(soldier_data[0], active_time),
+        frame_at(sonic_data[0], active_time),
+        position_at(soldier_data, active_time, duration),
+        position_at(sonic_data, active_time, duration),
+        soldier_data[3], sonic_data[3], jump_height,
+    )
