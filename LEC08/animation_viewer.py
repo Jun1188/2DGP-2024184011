@@ -1,4 +1,4 @@
-﻿"""두 캐릭터가 정해진 순서로 만나는 애니메이션 뷰어."""
+﻿"""각 캐릭터의 5종 동작을 5회씩 재생하고 1초 정지한 뒤 무한 반복한다."""
 
 from math import pi, sin
 from pathlib import Path
@@ -84,7 +84,7 @@ SONIC_SPIN = (
     (149, 251, 30, 35), (186, 251, 31, 36),
 )
 
-# (프레임들, 초당 프레임 수)
+# (프레임들, 장면 길이를 정하는 기준 초당 프레임 수)
 ANIMATIONS = {
     "soldier_idle": (SOLDIER_IDLE, 6),
     "soldier_walk": (SOLDIER_WALK, 9),
@@ -167,9 +167,14 @@ STANDOFF = {
     "sonic": ("sonic_idle", 470, 470, "left"),
 }
 
+RANGED = {
+    "soldier": ("soldier_shoot", 330, 330, "right"),
+    "sonic": ("sonic_spin", 470, 500, "left"),
+}
+
 STRIKE = {
     "soldier": ("soldier_attack", 330, 330, "right"),
-    "sonic": ("sonic_jump", 470, 200, "left"),
+    "sonic": ("sonic_jump", 500, 200, "left"),
     "jump": True,
 }
 
@@ -183,11 +188,14 @@ RETURN = {
     "soldier": ("soldier_walk", 390, 130, "left"),
     "sonic": ("sonic_run", 330, 670, "right"),
 }
-PHASES = (APPROACH, STANDOFF, STRIKE, COUNTER, RETURN)
+# 양쪽 캐릭터는 각 장면에서 자신의 동작을 5회 재생한다.
+# 장면 끝의 정지 시간은 PAUSE_SECONDS이며, 마지막 장면 뒤에는 처음으로 돌아간다.
+PHASES = (APPROACH, STANDOFF, RANGED, STRIKE, COUNTER, RETURN)
 
-def frame_at(animation_name, elapsed):
-    frames, fps = ANIMATIONS[animation_name]
-    frame_number = min(int(elapsed * fps), len(frames) * REPEAT_COUNT - 1)
+def frame_at(animation_name, elapsed, duration):
+    frames, _ = ANIMATIONS[animation_name]
+    total_frames = len(frames) * REPEAT_COUNT
+    frame_number = min(int(elapsed / duration * total_frames), total_frames - 1)
     return frames[frame_number % len(frames)]
 
 
@@ -198,9 +206,12 @@ def phase_duration(phase, hit_at=None):
     sonic_frames, sonic_fps = ANIMATIONS[sonic_name]
     soldier_duration = len(soldier_frames) / soldier_fps * REPEAT_COUNT
     sonic_duration = len(sonic_frames) / sonic_fps * REPEAT_COUNT
-    if phase.get("counter") and hit_at is not None:
-        soldier_duration += hit_at
-    return max(soldier_duration, sonic_duration)
+    duration = max(soldier_duration, sonic_duration)
+    if phase.get("counter"):
+        if hit_at is None:
+            return sonic_duration + duration  # 접촉을 기다리는 동안 종료하지 않는다.
+        return hit_at + duration
+    return duration
 
 def position_at(character, elapsed, duration):
     _, start_x, end_x, _ = character
@@ -215,22 +226,26 @@ def draw_phase(phase, elapsed, grass, soldier, sonic, hit_at=None):
     progress = active_time / duration
     jump_height = 90 * sin(pi * progress) if phase.get("jump") else 0
     soldier_x = position_at(soldier_data, active_time, duration)
-    soldier_frame = frame_at(soldier_data[0], active_time)
+    soldier_frame = frame_at(soldier_data[0], active_time, duration)
     sonic_frames, sonic_fps = ANIMATIONS[sonic_data[0]]
     sonic_duration = len(sonic_frames) / sonic_fps * REPEAT_COUNT
     sonic_x = position_at(sonic_data, active_time, sonic_duration)
-    sonic_frame = frame_at(sonic_data[0], active_time)
+    sonic_frame = frame_at(sonic_data[0], active_time, duration)
 
     if phase.get("counter"):
         if hit_at is None:
             soldier_x = soldier_data[1]
-            soldier_frame = frame_at("soldier_idle", active_time)
+            soldier_frame = frame_at("soldier_idle", active_time, duration)
+            sonic_frame = frame_at("sonic_run", active_time, sonic_duration)
         else:
-            hurt_frames, hurt_fps = ANIMATIONS["soldier_hurt"]
-            hurt_duration = len(hurt_frames) / hurt_fps * REPEAT_COUNT
             hurt_elapsed = active_time - hit_at
-            soldier_x = position_at(soldier_data, hurt_elapsed, hurt_duration)
-            soldier_frame = frame_at("soldier_hurt", hurt_elapsed)
+            reaction_duration = duration - hit_at
+            soldier_x = position_at(soldier_data, hurt_elapsed,
+                                    reaction_duration)
+            soldier_frame = frame_at("soldier_hurt", hurt_elapsed,
+                                     reaction_duration)
+            sonic_frame = frame_at("sonic_roll", hurt_elapsed,
+                                   reaction_duration)
 
     sonic_foot_y = GROUND_Y + jump_height
     sonic_x = keep_apart(soldier_frame, soldier_x, sonic_frame,
@@ -240,7 +255,11 @@ def draw_phase(phase, elapsed, grass, soldier, sonic, hit_at=None):
         sonic_box = hit_box(sonic_frame, sonic_x, sonic_foot_y)
         if boxes_overlap(roll_attack_box(sonic_box), soldier_box):
             hit_at = active_time
-            soldier_frame = frame_at("soldier_hurt", 0)
+            reaction_duration = phase_duration(phase, hit_at) - hit_at
+            soldier_frame = frame_at("soldier_hurt", 0, reaction_duration)
+            sonic_frame = frame_at("sonic_roll", 0, reaction_duration)
+            sonic_x = keep_apart(soldier_frame, soldier_x, sonic_frame,
+                                 sonic_x, sonic_foot_y)
 
     draw_scene(
         grass, soldier, sonic,
