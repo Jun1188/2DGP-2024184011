@@ -10,13 +10,13 @@ RESOURCE_DIR = Path(__file__).resolve().parent
 
 CANVAS_WIDTH = 800
 CANVAS_HEIGHT = 600
-GROUND_Y = 85
-DISPLAY_HEIGHT = 60  # 기존 300픽셀에서 1/5 크기로 줄인다.
-DISPLAY_MAX_WIDTH = 100
+GROUND_Y = 150
+DISPLAY_HEIGHT = CANVAS_HEIGHT / 2
+DISPLAY_MAX_WIDTH = 430
 REPEAT_COUNT = 5
 PAUSE_SECONDS = 1.0
-BODY_GAP = 5
-ROLL_REACH = 22
+BODY_GAP = 10
+ROLL_REACH = 80
 
 # 각 항목은 원본 시트의 (왼쪽, 아래, 너비, 높이)이다.
 SOLDIER_IDLE = (
@@ -100,8 +100,9 @@ ANIMATIONS = {
 
 def displayed_size(frame):
     _, _, width, height = frame
-    scale = min(DISPLAY_HEIGHT / height, DISPLAY_MAX_WIDTH / width)
-    return width * scale, height * scale
+    # 두 캐릭터의 높이를 일정하게 유지하고 넓은 공격 효과만 가로로 제한한다.
+    draw_width = min(width * DISPLAY_HEIGHT / height, DISPLAY_MAX_WIDTH)
+    return draw_width, DISPLAY_HEIGHT
 
 
 def hit_box(frame, x, foot_y):
