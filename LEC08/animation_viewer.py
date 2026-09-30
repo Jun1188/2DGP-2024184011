@@ -101,3 +101,13 @@ def draw_scene(grass, soldier, sonic, soldier_frame, sonic_frame,
     draw_character(sonic, sonic_frame, sonic_x,
                    GROUND_Y + sonic_jump_height, sonic_direction)
     update_canvas()
+
+# 각 캐릭터 값: (애니메이션, 시작 x, 끝 x, 바라보는 방향)
+APPROACH = {
+    "soldier": ("soldier_walk", 130, 330, "right"),
+    "sonic": ("sonic_run", 670, 470, "left"),
+}
+STANDOFF = {
+    "soldier": ("soldier_idle", 330, 330, "right"),
+    "sonic": ("sonic_idle", 470, 470, "left"),
+}
