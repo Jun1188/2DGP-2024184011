@@ -79,3 +79,14 @@ ANIMATIONS = {
     "sonic_jump": (SONIC_JUMP, 9),
     "sonic_roll": (SONIC_ROLL, 12),
 }
+
+def draw_character(image, frame, x, foot_y, direction):
+    left, bottom, width, height = frame
+    scale = min(DISPLAY_HEIGHT / height, DISPLAY_MAX_WIDTH / width)
+    draw_width = width * scale
+    draw_height = height * scale
+    flip = "h" if direction == "left" else ""
+    image.clip_composite_draw(
+        left, bottom, width, height, 0, flip,
+        x, foot_y + draw_height / 2, draw_width, draw_height,
+    )
