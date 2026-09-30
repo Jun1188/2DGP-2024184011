@@ -128,3 +128,17 @@ RETURN = {
     "sonic": ("sonic_run", 340, 670, "right"),
 }
 PHASES = (APPROACH, STANDOFF, STRIKE, COUNTER, RETURN)
+
+def frame_at(animation_name, elapsed):
+    frames, fps = ANIMATIONS[animation_name]
+    frame_number = min(int(elapsed * fps), len(frames) * REPEAT_COUNT - 1)
+    return frames[frame_number % len(frames)]
+
+
+def phase_duration(phase):
+    soldier_name = phase["soldier"][0]
+    sonic_name = phase["sonic"][0]
+    soldier_frames, soldier_fps = ANIMATIONS[soldier_name]
+    sonic_frames, sonic_fps = ANIMATIONS[sonic_name]
+    return max(len(soldier_frames) / soldier_fps,
+               len(sonic_frames) / sonic_fps) * REPEAT_COUNT
