@@ -138,6 +138,8 @@ def main():
             print(f"이미지 로드 실패: {image_path}\n{error}")
             return
 
+        completed_repeats = 0
+        waiting = False
         frame_index = 0
         elapsed = 0.0
         previous_time = perf_counter()
@@ -153,9 +155,24 @@ def main():
             current_time = perf_counter()
             elapsed += current_time - previous_time
             previous_time = current_time
-            while elapsed >= FRAME_DURATION:
-                elapsed -= FRAME_DURATION
-                frame_index = (frame_index + 1) % len(ACTIONS[0])
+            # 대기 중에도 이벤트 처리와 화면 갱신을 계속한다.
+            while True:
+                duration = WAIT_DURATION if waiting else FRAME_DURATION
+                if elapsed < duration:
+                    break
+                elapsed -= duration
+                if waiting:
+                    waiting = False
+                    completed_repeats = 0
+                    frame_index = 0
+                elif frame_index + 1 < len(ACTIONS[0]):
+                    frame_index += 1
+                else:
+                    completed_repeats += 1
+                    if completed_repeats == REPEAT_COUNT:
+                        waiting = True
+                    else:
+                        frame_index = 0
             pico2d.clear_canvas()
             draw_frame(image, 0, frame_index)
             pico2d.update_canvas()
