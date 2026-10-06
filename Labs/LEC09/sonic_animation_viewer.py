@@ -138,6 +138,9 @@ def main():
             print(f"이미지 로드 실패: {image_path}\n{error}")
             return
 
+        frame_index = 0
+        elapsed = 0.0
+        previous_time = perf_counter()
         running = True
         while running:
             for event in pico2d.get_events():
@@ -147,8 +150,14 @@ def main():
                     running = False
             if not running:
                 break
+            current_time = perf_counter()
+            elapsed += current_time - previous_time
+            previous_time = current_time
+            while elapsed >= FRAME_DURATION:
+                elapsed -= FRAME_DURATION
+                frame_index = (frame_index + 1) % len(ACTIONS[0])
             pico2d.clear_canvas()
-            draw_frame(image, 0, 0)
+            draw_frame(image, 0, frame_index)
             pico2d.update_canvas()
             pico2d.delay(LOOP_DELAY)
     finally:
