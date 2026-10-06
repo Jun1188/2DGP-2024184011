@@ -114,15 +114,45 @@ FRAME_DURATION = 0.1
 LOOP_DELAY = 1.0 / 60.0
 REPEAT_COUNT = 5
 WAIT_DURATION = 1.0
+MOVE_SPEED = 120.0
+JUMP_HEIGHT = 140.0
+LEFT_LIMIT = 60.0
+RIGHT_LIMIT = 740.0
+# action 번호는 1부터, 목록 인덱스는 0부터 시작한다.
+FORWARD_ACTIONS = (1, 2, 4, 5, 6)
+JUMP_ACTIONS = (3, 7)
 
 
-def draw_frame(image, action_index, frame_index):
+def wrap_x(x):
+    return LEFT_LIMIT + (x - LEFT_LIMIT) % (RIGHT_LIMIT - LEFT_LIMIT)
+
+
+def get_position(action_index, frame_index, completed_repeats, elapsed,
+                 waiting, start_x):
+    cycle_duration = len(ACTIONS[action_index]) * FRAME_DURATION
+    if waiting:
+        action_time = REPEAT_COUNT * cycle_duration
+    else:
+        action_time = (completed_repeats * cycle_duration
+                       + frame_index * FRAME_DURATION + elapsed)
+    x = start_x
+    if action_index in FORWARD_ACTIONS:
+        x = wrap_x(start_x + MOVE_SPEED * action_time)
+    y = BASE_Y
+    if action_index in JUMP_ACTIONS and not waiting:
+        phase = (frame_index * FRAME_DURATION + elapsed) / cycle_duration
+        # 1회 재생마다 이륙 → 최고점 → 착지하는 포물선.
+        y += 4.0 * JUMP_HEIGHT * phase * (1.0 - phase)
+    return x, y
+
+
+def draw_frame(image, action_index, frame_index, x, y):
     left, top, width, height = ACTIONS[action_index][frame_index]
     bottom = IMAGE_HEIGHT - top - height
     draw_width = width * SCALE
     draw_height = height * SCALE
     image.clip_draw(left, bottom, width, height,
-                    CENTER_X, BASE_Y + draw_height / 2,
+                    x, y + draw_height / 2,
                     draw_width, draw_height)
 
 
@@ -138,6 +168,7 @@ def main():
             print(f"이미지 로드 실패: {image_path}\n{error}")
             return
 
+        start_x = float(CENTER_X)
         action_index = 0
         completed_repeats = 0
         waiting = False
@@ -163,6 +194,11 @@ def main():
                     break
                 elapsed -= duration
                 if waiting:
+                    # 이전 동작의 종료 위치를 다음 동작에 넘긴다.
+                    if action_index in FORWARD_ACTIONS:
+                        distance = (MOVE_SPEED * len(ACTIONS[action_index])
+                                    * FRAME_DURATION * REPEAT_COUNT)
+                        start_x = wrap_x(start_x + distance)
                     waiting = False
                     action_index = (action_index + 1) % len(ACTIONS)
                     completed_repeats = 0
@@ -176,7 +212,9 @@ def main():
                     else:
                         frame_index = 0
             pico2d.clear_canvas()
-            draw_frame(image, action_index, frame_index)
+            x, y = get_position(action_index, frame_index, completed_repeats,
+                                elapsed, waiting, start_x)
+            draw_frame(image, action_index, frame_index, x, y)
             pico2d.update_canvas()
             pico2d.delay(LOOP_DELAY)
     finally:
