@@ -138,6 +138,7 @@ def main():
             print(f"이미지 로드 실패: {image_path}\n{error}")
             return
 
+        action_index = 0
         completed_repeats = 0
         waiting = False
         frame_index = 0
@@ -163,9 +164,10 @@ def main():
                 elapsed -= duration
                 if waiting:
                     waiting = False
+                    action_index = (action_index + 1) % len(ACTIONS)
                     completed_repeats = 0
                     frame_index = 0
-                elif frame_index + 1 < len(ACTIONS[0]):
+                elif frame_index + 1 < len(ACTIONS[action_index]):
                     frame_index += 1
                 else:
                     completed_repeats += 1
@@ -174,7 +176,7 @@ def main():
                     else:
                         frame_index = 0
             pico2d.clear_canvas()
-            draw_frame(image, 0, frame_index)
+            draw_frame(image, action_index, frame_index)
             pico2d.update_canvas()
             pico2d.delay(LOOP_DELAY)
     finally:
