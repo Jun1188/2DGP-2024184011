@@ -1,4 +1,7 @@
 ﻿from pathlib import Path
+from time import perf_counter
+
+import pico2d
 
 # 프레임 좌표: (left, top, width, height), 원점은 이미지 왼쪽 위.
 IMAGE_WIDTH = 399
@@ -101,3 +104,56 @@ ACTIONS = [
         (125, 427, 23, 38),
     ],
 ]
+
+WINDOW_WIDTH = 800
+WINDOW_HEIGHT = 600
+SCALE = 6
+CENTER_X = 400
+BASE_Y = 180
+FRAME_DURATION = 0.1
+LOOP_DELAY = 1.0 / 60.0
+REPEAT_COUNT = 5
+WAIT_DURATION = 1.0
+
+
+def draw_frame(image, action_index, frame_index):
+    left, top, width, height = ACTIONS[action_index][frame_index]
+    bottom = IMAGE_HEIGHT - top - height
+    draw_width = width * SCALE
+    draw_height = height * SCALE
+    image.clip_draw(left, bottom, width, height,
+                    CENTER_X, BASE_Y + draw_height / 2,
+                    draw_width, draw_height)
+
+
+def main():
+    image_path = Path(__file__).resolve().parent / "sonic-sprite.png"
+    pico2d.open_canvas(WINDOW_WIDTH, WINDOW_HEIGHT)
+    try:
+        try:
+            if not image_path.is_file():
+                raise FileNotFoundError("이미지 파일이 없습니다.")
+            image = pico2d.load_image(str(image_path))
+        except Exception as error:
+            print(f"이미지 로드 실패: {image_path}\n{error}")
+            return
+
+        running = True
+        while running:
+            for event in pico2d.get_events():
+                if event.type == pico2d.SDL_QUIT:
+                    running = False
+                elif event.type == pico2d.SDL_KEYDOWN and event.key == pico2d.SDLK_ESCAPE:
+                    running = False
+            if not running:
+                break
+            pico2d.clear_canvas()
+            draw_frame(image, 0, 0)
+            pico2d.update_canvas()
+            pico2d.delay(LOOP_DELAY)
+    finally:
+        pico2d.close_canvas()
+
+
+if __name__ == "__main__":
+    main()
