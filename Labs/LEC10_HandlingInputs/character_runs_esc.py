@@ -7,21 +7,30 @@ character = load_image('animation_sheet.png')
 
 # fill here
 
+running = True
 
 
 def handle_events():
     # fill here
-    pass
+    global running #global var을 가져올 수 있게 됨
+    events = get_events()
+    for event in events:
+        if event.type == SDL_QUIT:
+            running = False
+        if event.type == SDL_KEYDOWN and event.key == SDLK_ESCAPE:
+            running = False
 
 
 frame = 0
 for x in range(0, 800, 5):
 
+    handle_events()
+    if not running:
+        break
     clear_canvas()
     grass.draw(400, 30)
     character.clip_draw(frame * 100, 100, 100, 100, x, 90)
     update_canvas()
-
     # fill here
 
 
