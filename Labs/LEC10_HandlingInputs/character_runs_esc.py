@@ -1,3 +1,8 @@
+﻿import os
+from pathlib import Path
+
+os.chdir(Path(__file__).resolve().parent)
+
 from pico2d import *
 
 open_canvas()
@@ -5,13 +10,11 @@ grass = load_image('grass.png')
 character = load_image('animation_sheet.png')
 
 
-# fill here
-
 running = True
 
 
 def handle_events():
-    # fill here
+
     global running #global var을 가져올 수 있게 됨
     events = get_events()
     for event in events:
@@ -31,7 +34,7 @@ for x in range(0, 800, 5):
     grass.draw(400, 30)
     character.clip_draw(frame * 100, 100, 100, 100, x, 90)
     update_canvas()
-    # fill here
+
 
 
 

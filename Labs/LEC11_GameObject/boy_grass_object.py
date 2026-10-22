@@ -1,3 +1,8 @@
+﻿import os
+from pathlib import Path
+
+os.chdir(Path(__file__).resolve().parent)
+
 from pico2d import *
 import random
 
@@ -25,8 +30,8 @@ class Grass:
 
 class Boy:
     def __init__(self):
-        self.x, self.y = 0, 90
-        self.frame = random.randint(0, 6)
+        self.x, self.y = random.randint(100, 700), 90
+        self.frame = random.randint(0,7)
         self.max_frame = 8
         self.deltaPerFrame = 100
         self.dirX = random.randint(1, 10)
@@ -36,6 +41,22 @@ class Boy:
         self.x += self.dirX
     def draw(self):
         self.img.clip_draw(self.frame*self.deltaPerFrame, 0, self.deltaPerFrame, self.deltaPerFrame, self.x, self.y)
+
+
+class Zombie:
+    def __init__(self):
+        self.x, self.y = 100, 170
+        self.frame = 0
+        self.image = load_image('zombie_run_animation.png')
+    def update(self):   
+        self.frame = (self.frame + 1) % 10
+        self.x += 5
+    def draw(self):
+        frame_width = self.image.w // 10
+        frame_height = self.image.h
+        self.image.clip_draw(self.frame * frame_width, 0, frame_width, frame_height,
+        self.x, self.y, frame_width // 2, frame_height // 2)
+
 
 def handle_events():
     global running
@@ -50,29 +71,45 @@ def handle_events():
 def reset_world():
     global running
     running = True
-def update_world(boys, grass):
-    grass.update()
-    for d in boys:
+
+
+    # 객체들을 담는 world list
+    global world
+    world = []
+
+    grass = Grass()
+    world.append(grass)
+
+    team = [Boy() for i in range(10)]
+    world.extend(team)
+
+    zombie = Zombie()
+    world.append(zombie)
+
+def update_world():
+
+    for d in world:
         d.update()
 
-def render_world(boys, grass):
+
+def render_world():
     clear_canvas()
-    for d in boys:
+    for d in world:
         d.draw()
-    grass.draw()
+
     update_canvas()
 
 
 
 open_canvas()
-grass = Grass()
-numBoy = 10
-boys = [Boy() for i in range(numBoy)]
+
 
 reset_world()
 while running:
     handle_events()
-    update_world(boys, grass)
-    render_world(boys, grass)
+    if not running:
+        break
+    update_world()
+    render_world()
     delay(0.05)
 close_canvas()

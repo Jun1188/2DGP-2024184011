@@ -1,4 +1,8 @@
 ﻿import math
+import os
+from pathlib import Path
+
+os.chdir(Path(__file__).resolve().parent)
 
 from pico2d import *
 
@@ -9,6 +13,10 @@ WINDOW_HEIGHT = 600
 
 
 def draw_call(x, y, time_scale=1):
+    for event in get_events():
+        if event.type == SDL_QUIT or (event.type == SDL_KEYDOWN and event.key == SDLK_ESCAPE):
+            close_canvas()
+            raise SystemExit
     clear_canvas()
     grass.draw(WINDOW_WIDTH // 2, 30)
     character.draw(x, y)
@@ -26,7 +34,7 @@ def interpolate_draw(x, y, target_x, target_y):
         y += dy
         draw_call(x, y, 0.5)
 
-    return x, y
+    return target_x, target_y
 
 
 def rect_move(x, y, side):
