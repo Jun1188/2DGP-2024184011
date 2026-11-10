@@ -30,6 +30,8 @@ def handle_events():
         elif event.type == SDL_KEYUP:
             if event.key == SDLK_p:
                 play_mode.pause_key_down = False
+            elif event.key == SDLK_m:
+                play_mode.item_key_down = False
             elif event.key in (SDLK_LEFT, SDLK_RIGHT):
                 play_mode.boy.pressed_keys.discard(event.key)
     if resume_requested:

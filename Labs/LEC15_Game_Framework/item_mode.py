@@ -1,5 +1,6 @@
 ﻿from pico2d import *
 import game_framework
+import game_world
 import play_mode
 import title_mode
 
@@ -55,6 +56,6 @@ def update():
 
 def render():
     clear_canvas()
-    play_mode.game_world.render()
+    game_world.render()
     image.draw(400, 300)
     update_canvas()
